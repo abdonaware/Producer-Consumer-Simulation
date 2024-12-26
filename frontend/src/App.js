@@ -1,23 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import SimulatorCanvas from "./components/SimulatorCanvas";
+import Toolbar from "./components/Toolbar";
 
 function App() {
+  const [elements, setElements] = useState([]);
+  const [connections, setConnections] = useState([]);
+  const [isRunning, setIsRunning] = useState(false);
+  const [productCount, setProductCount] = useState(Number(0));
+  const [customers, setCustomers] = useState([]); // Customer positions
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="flex flex-col h-screen">
+      <Toolbar
+        elements={elements}
+        setElements={setElements}
+        connections={connections}
+        setConnections={setConnections}
+        isRunning={isRunning}
+        setIsRunning={setIsRunning}
+        productCount={productCount}
+        setProductCount={setProductCount}
+        customers={customers}
+        setCustomers={setCustomers}
+      />
+      <SimulatorCanvas
+        elements={elements}
+        setElements={setElements}
+        connections={connections}
+        setConnections={setConnections}
+        isRunning={isRunning}
+        customers={customers}
+        setCustomers={setCustomers}
+      />
     </div>
   );
 }
