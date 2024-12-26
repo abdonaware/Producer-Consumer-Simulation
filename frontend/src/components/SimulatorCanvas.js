@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Stage, Layer, Arrow, Circle } from "react-konva";
+import React, { useState } from "react";
+import { Stage, Layer, Arrow } from "react-konva";
 import Machine from "./Machine";
 import Queue from "./Queue";
 
@@ -9,11 +9,8 @@ const SimulatorCanvas = ({
   connections,
   setConnections,
   isRunning,
-  customers,
-  setCustomers
 }) => {
   const [tempConnection, setTempConnection] = useState(null); // Temporary connection
-
 
   // Handle dragging elements
   const handleDrag = (id, newPos) => {
@@ -44,49 +41,49 @@ const SimulatorCanvas = ({
   };
 
   // Simulate customer movement along connections
-  useEffect(() => {
-    if (isRunning) {
-      const interval = setInterval(() => {
-        setCustomers((prev) =>
-          prev.map((cust) => {
-            const connection = connections.find((c) => c.from === cust.current);
-            if (connection) {
-              const toElement = elements.find((el) => el.id === connection.to);
-              const dx = toElement.x + 40 - cust.x; // Adjust for element position
-              const dy = toElement.y + 25 - cust.y;
-              const dist = Math.sqrt(dx * dx + dy * dy);
+  //   useEffect(() => {
+  //     if (isRunning) {
+  //       const interval = setInterval(() => {
+  //         setCustomers((prev) =>
+  //           prev.map((cust) => {
+  //             const connection = connections.find((c) => c.from === cust.current);
+  //             if (connection) {
+  //               const toElement = elements.find((el) => el.id === connection.to);
+  //               const dx = toElement.x + 40 - cust.x; // Adjust for element position
+  //               const dy = toElement.y + 25 - cust.y;
+  //               const dist = Math.sqrt(dx * dx + dy * dy);
 
-              // Move customer closer to the target
-              if (dist < 5) {
-                return { ...cust, current: connection.to }; // Move to the next element
-              }
+  //               // Move customer closer to the target
+  //               if (dist < 5) {
+  //                 return { ...cust, current: connection.to }; // Move to the next element
+  //               }
 
-              return {
-                ...cust,
-                x: cust.x + (dx / dist) * 2,
-                y: cust.y + (dy / dist) * 2,
-              };
-            }
-            return cust; // Stay at the current position
-          })
-        );
-      }, 50);
-      return () => clearInterval(interval);
-    }
-  }, [isRunning,setCustomers, connections, elements]);
+  //               return {
+  //                 ...cust,
+  //                 x: cust.x + (dx / dist) * 2,
+  //                 y: cust.y + (dy / dist) * 2,
+  //               };
+  //             }
+  //             return cust; // Stay at the current position
+  //           })
+  //         );
+  //       }, 50);
+  //       return () => clearInterval(interval);
+  //     }
+  //   }, [isRunning,setCustomers, connections, elements]);
 
-  // Add a customer to the first machine for the simulation
-  useEffect(() => {
-    if (isRunning && customers.length === 0 && elements.length > 0) {
-      setCustomers([
-        {
-          x: elements[0].x + 40,
-          y: elements[0].y + 25,
-          current: elements[0].id,
-        },
-      ]);
-    }
-  }, [isRunning,setCustomers, customers, elements]);
+  //   // Add a customer to the first machine for the simulation
+  //   useEffect(() => {
+  //     if (isRunning && customers.length === 0 && elements.length > 0) {
+  //       setCustomers([
+  //         {
+  //           x: elements[0].x + 40,
+  //           y: elements[0].y + 25,
+  //           current: elements[0].id,
+  //         },
+  //       ]);
+  //     }
+  //   }, [isRunning,setCustomers, customers, elements]);
 
   // Add helper function for arrow points
   const calculateArrowPoints = (from, to) => {
@@ -179,7 +176,7 @@ const SimulatorCanvas = ({
           })}
 
           {/* Customers last */}
-          {customers.map((cust, index) => (
+          {/* {customers.map((cust, index) => (
             <Circle
               key={index}
               x={cust.x}
@@ -191,7 +188,7 @@ const SimulatorCanvas = ({
               shadowOffsetX={2}
               shadowOffsetY={2}
             />
-          ))}
+          ))} */}
         </Layer>
       </Stage>
     </div>

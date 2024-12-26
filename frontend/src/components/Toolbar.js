@@ -9,7 +9,6 @@ const Toolbar = ({
   elements,
   setElements,
   setConnections,
-  setCustomers,
   isRunning,
   setIsRunning,
   productCount,
@@ -51,7 +50,6 @@ const Toolbar = ({
   const clearStage = () => {
     setElements([]);
     setConnections([]);
-    setCustomers([]);
     setIsRunning(false);
     setElements([
       {

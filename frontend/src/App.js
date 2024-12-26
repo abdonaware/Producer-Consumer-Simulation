@@ -7,7 +7,6 @@ function App() {
   const [connections, setConnections] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
   const [productCount, setProductCount] = useState(Number(0));
-  const [customers, setCustomers] = useState([]); // Customer positions
 
   return (
     <div className="flex flex-col h-screen">
@@ -20,8 +19,6 @@ function App() {
         setIsRunning={setIsRunning}
         productCount={productCount}
         setProductCount={setProductCount}
-        customers={customers}
-        setCustomers={setCustomers}
       />
       <SimulatorCanvas
         elements={elements}
@@ -29,8 +26,6 @@ function App() {
         connections={connections}
         setConnections={setConnections}
         isRunning={isRunning}
-        customers={customers}
-        setCustomers={setCustomers}
       />
     </div>
   );
