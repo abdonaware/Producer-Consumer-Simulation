@@ -1,19 +1,21 @@
 package com.example.demo.DesginPattern;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import com.example.demo.Classes.Mashine;
+import com.example.demo.Classes.Machine;
+
 public class Concurrency {
     final static int maxNOfMashines = 5;
 
     int noOfConcurrentMashines = 0;
     ExecutorService executor = Executors.newFixedThreadPool(maxNOfMashines);
 
-    public void addMashine(Mashine mashine) {
+    public void addMashine(Machine mashine) {
         try {
             if (noOfConcurrentMashines < maxNOfMashines) {
-                executor.wait(mashine.getProcessingTime()*1000);
+                executor.wait(mashine.getProcessingTime() * 1000);
                 noOfConcurrentMashines++;
             }
         } catch (Exception e) {
@@ -21,7 +23,7 @@ public class Concurrency {
         }
     }
 
-    public void removeMashine(Mashine mashine) {
+    public void removeMashine(Machine mashine) {
         if (noOfConcurrentMashines > 0) {
             executor.shutdown();
             try {
@@ -30,7 +32,7 @@ public class Concurrency {
                 e.printStackTrace();
             }
             noOfConcurrentMashines--;
-        }    
+        }
     }
-    
+
 }
