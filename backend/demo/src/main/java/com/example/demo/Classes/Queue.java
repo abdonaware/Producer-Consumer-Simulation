@@ -14,6 +14,10 @@ public class Queue implements Observer {
     private List<Machine> outMashines;
     private List<Products> products;
     private int noOfProducts;
+    private int pendingProduct;
+    private int id;
+    private boolean startQueue;
+    private boolean endQueue;
 
     public Queue() {
     }
