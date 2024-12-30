@@ -24,6 +24,7 @@ public class CreateService {
     public long addQueue(String entity) {
         Queue queue = new Queue();
         queue.setNoOfProducts(0);
+        queue.setId(repository.queues.size());
         repository.queues.add(queue);
         return queue.getNoOfProducts();
     }
