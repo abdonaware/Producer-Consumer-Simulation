@@ -8,6 +8,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ProjectRepository {
     private static ProjectRepository instance;
+    public Queue startQueue;
+    public Queue endQueue;
+    public int MachineId = 0;
+    public int QueueId = 0;
     public List<Machine> machines;
     public List<Queue> queues;
 

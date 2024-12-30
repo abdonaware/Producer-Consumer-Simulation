@@ -13,7 +13,6 @@ public class Queue implements Observer {
     private List<Machine> inMashines;
     private List<Machine> outMashines;
     private List<Products> products;
-    private int noOfProducts;
     private int pendingProduct;
     private int id;
     private boolean startQueue;
@@ -31,12 +30,11 @@ public class Queue implements Observer {
 
     public void addProduct(Products p) {
         products.add(p);
-        noOfProducts++;
+        pendingProduct++;
     }
 
     public void removeProduct(Products p) {
         products.remove(p);
-        noOfProducts--;
     }
 
     public void addMashine(Machine m) {
@@ -56,15 +54,14 @@ public class Queue implements Observer {
     }
 
     public void processProduct() {
-        if (noOfProducts > 0) {
+        if (pendingProduct > 0) {
             for (Machine m : inMashines) {
                 if (!m.isBusy()) {
                     m.setBusy(true);
-                    if (!products.isEmpty()) {
-                        m.setPendingProduct(true);
-                    }
-                    products.remove(0);
-                    noOfProducts--;
+                    m.setPendingProduct(true);
+                    pendingProduct--;
+                    m.processProduct();
+
                     break;
                 }
             }
