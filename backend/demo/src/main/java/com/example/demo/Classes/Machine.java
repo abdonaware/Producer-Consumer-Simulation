@@ -28,9 +28,11 @@ public class Machine implements Observer {
     @Override
     public void notifyall() {
         for (Queue q : inQueues) {
+
             q.processProduct();
         }
         for (Queue q : outQueues) {
+            q.setPendingProduct(q.getPendingProduct() + 1);
             q.processProduct();
         }
     }
@@ -49,6 +51,20 @@ public class Machine implements Observer {
 
     public void removeOutQueue(Queue q) {
         outQueues.remove(q);
+    }
+
+    public void processProduct() {
+        if (pendingProduct) {
+            isBusy = true;
+            pendingProduct = false;
+            try {
+                Thread.sleep(processingTime * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            isBusy = false;
+            notifyall();
+        }
     }
 
 }

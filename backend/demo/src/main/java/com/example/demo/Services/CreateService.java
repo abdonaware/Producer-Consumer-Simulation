@@ -9,7 +9,7 @@ public class CreateService {
 
     public long addMachine(String entity) {
         Machine machine = new Machine();
-        machine.setId(repository.machines.size());
+        machine.setId(repository.MachineId++);
         repository.machines.add(machine);
         return machine.getId();
     }
@@ -23,10 +23,11 @@ public class CreateService {
 
     public long addQueue(String entity) {
         Queue queue = new Queue();
-        queue.setNoOfProducts(0);
-        queue.setId(repository.queues.size());
+        queue.setPendingProduct(0);
+        queue.setId(repository.QueueId++);
+
         repository.queues.add(queue);
-        return queue.getNoOfProducts();
+        return queue.getPendingProduct();
     }
 
     public void removeQueue(long id) {
