@@ -1,15 +1,17 @@
 package com.example.demo.Services;
 
-import com.example.demo.ProjectRepository;
+import org.springframework.stereotype.Service;
+
 import com.example.demo.Classes.Machine;
 import com.example.demo.Classes.Queue;
-
+import com.example.demo.ProjectRepository;
+@Service
 public class CreateService {
     private ProjectRepository repository = ProjectRepository.getInstance();
 
     public long addMachine(String entity) {
         Machine machine = new Machine();
-        machine.setId(repository.MachineId++);
+        machine.setId(repository.Id++);
         repository.machines.add(machine);
         return machine.getId();
     }
@@ -24,10 +26,9 @@ public class CreateService {
     public long addQueue(String entity) {
         Queue queue = new Queue();
         queue.setPendingProduct(0);
-        queue.setId(repository.QueueId++);
-
+        queue.setId(repository.Id++);
         repository.queues.add(queue);
-        return queue.getPendingProduct();
+        return queue.getId();
     }
 
     public void removeQueue(long id) {

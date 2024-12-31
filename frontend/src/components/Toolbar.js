@@ -4,6 +4,7 @@ import { PiQueueBold } from "react-icons/pi";
 import { IoSettings } from "react-icons/io5";
 import { AiOutlineClear } from "react-icons/ai";
 import { BiCartAdd } from "react-icons/bi";
+import axios from "axios";
 
 const Toolbar = ({
   elements,
@@ -13,38 +14,49 @@ const Toolbar = ({
   setIsRunning,
   productCount,
   setProductCount,
+  sendMessage,
 }) => {
   const buttonClass =
     "px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2";
 
-  const addMachine = () => {
-    setElements([
-      ...elements,
-      { id: Date.now(), type: "machine", x: 100, y: 100 },
-    ]);
-    console.log(elements);
+  const addMachine =async () => {
+    try {
+      const response =  await axios.post("http://localhost:8080/addMachine", {
+      });
+      console.log(response.data);
+      setElements([
+        ...elements,
+        { id: response.data, type: "machine", x: 100, y: 100 },
+      ]);
+      console.log(elements);
+      
+    } catch (error) {
+      
+    }
+    
   };
 
-  const addQueue = () => {
-    const maxQueueNumber = Math.max(
-      0,
-      ...elements
-        .filter((el) => el.type === "queue")
-        .filter((q) => q.queueNumber !== 1000)
-        .map((q) => q.queueNumber)
-    );
+  const addQueue = async() => {
+    
 
-    setElements([
-      ...elements,
-      {
-        id: Date.now(),
-        type: "queue",
-        x: 300,
-        y: 100,
-        queueNumber: maxQueueNumber + 1,
-        productCount: 0,
-      },
-    ]);
+    try {
+      const response = await axios.post("http://localhost:8080/addQueue", {
+      });
+      console.log(response.data);
+      setElements([
+        ...elements,
+        {
+          id:response.data,
+          type: "queue",
+          x: 300,
+          y: 100,
+          queueNumber:  response.data,
+          productCount: 0,
+        },
+      ]);
+    } catch (error) {
+      
+    }
   };
 
   const clearStage = () => {
@@ -81,6 +93,13 @@ const Toolbar = ({
       )
     );
   };
+  const handleRunnigChange = () => {
+    if (isRunning) {
+      sendMessage("Stop Simulation");
+    } else {
+    setIsRunning(!isRunning);
+    sendMessage("Start Simulation");
+  }};
 
   useEffect(() => {
     console.log("xx");
@@ -139,7 +158,7 @@ const Toolbar = ({
 
       {/* Combined Run/Pause Toggle Button */}
       <button
-        onClick={() => setIsRunning(!isRunning)}
+        onClick={() =>{handleRunnigChange()}}
         className={`${buttonClass} ${
           isRunning
             ? "bg-amber-500 hover:bg-amber-600 text-white"
