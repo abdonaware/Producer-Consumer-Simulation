@@ -34,6 +34,7 @@ const SimulatorCanvas = ({
 
   // Complete a connection when clicking on a target element
   const completeConnection = (id) => {
+    console.log("completeConnection", id);
     if (tempConnection && tempConnection.from !== id) {
       setConnections([...connections, { from: tempConnection.from, to: id }]);
       setTempConnection(null);

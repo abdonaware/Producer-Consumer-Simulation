@@ -3,7 +3,10 @@ package com.example.demo.Classes;
 import java.util.List;
 import java.util.Random;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.example.demo.DesginPattern.Observer;
+import com.example.demo.WebSocketSender;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +14,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Machine implements Observer {
+
+    @Autowired
+    private WebSocketSender webSocketSender;
 
     private int id;
     private boolean isBusy;// true if the mashine is working on a product
@@ -27,6 +33,7 @@ public class Machine implements Observer {
 
     @Override
     public void notifyall() {
+        webSocketSender.sendMessage("/topic/machine", "Machine " + id + " is finish the product and is available");
         for (Queue q : inQueues) {
 
             q.processProduct();

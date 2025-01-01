@@ -1,22 +1,26 @@
 package com.example.demo;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
 import com.example.demo.Classes.Machine;
 import com.example.demo.Classes.Queue;
-import org.springframework.stereotype.Repository;
 
 @Repository
 public class ProjectRepository {
     private static ProjectRepository instance;
     public Queue startQueue;
     public Queue endQueue;
-    public int MachineId = 0;
-    public int QueueId = 0;
+    public int Id = 2;
     public List<Machine> machines;
     public List<Queue> queues;
 
     private ProjectRepository() {
         // Initialize your lists here
+        machines = new ArrayList<>();
+        queues = new ArrayList<>();
     }
 
     public static synchronized ProjectRepository getInstance() {

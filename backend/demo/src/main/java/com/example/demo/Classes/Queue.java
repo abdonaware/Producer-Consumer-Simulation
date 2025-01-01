@@ -2,6 +2,9 @@ package com.example.demo.Classes;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.example.demo.WebSocketSender;
 import com.example.demo.DesginPattern.Observer;
 
 import lombok.Getter;
@@ -10,6 +13,9 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Queue implements Observer {
+
+    @Autowired
+    private WebSocketSender webSocketSender;
     private List<Machine> inMashines;
     private List<Machine> outMashines;
     private List<Products> products;
@@ -59,6 +65,7 @@ public class Queue implements Observer {
                 if (!m.isBusy()) {
                     m.setBusy(true);
                     m.setPendingProduct(true);
+                    webSocketSender.sendMessage("/topic/machine", "Machine " + m.getId() + " is processing a product");
                     pendingProduct--;
                     m.processProduct();
 
