@@ -2,7 +2,9 @@ package com.example.demo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.Classes.Machine;
@@ -10,39 +12,87 @@ import com.example.demo.Classes.Queue;
 
 @Repository
 public class ProjectRepository {
-    private static ProjectRepository instance;
+
     public Queue startQueue;
     public Queue endQueue;
-    public int Id = 2;
+    public int Id = 1;
     public List<Machine> machines;
     public List<Queue> queues;
 
-    private ProjectRepository() {
-        // Initialize your lists here
+    @Autowired
+    private WebSocketSender webSocketSender;
+
+    public ProjectRepository() {
         machines = new ArrayList<>();
         queues = new ArrayList<>();
+       
     }
 
-    public static synchronized ProjectRepository getInstance() {
-        if (instance == null) {
-            instance = new ProjectRepository();
+    public long addQueue() {
+        if (startQueue == null || endQueue == null) {
+            startQueue = new Queue(webSocketSender);
+            endQueue = new Queue(webSocketSender);
+            startQueue.setId(0);
+            endQueue.setId(1000);
         }
-        return instance;
+        Queue queue = new Queue(webSocketSender);
+        System.out.println("Queue created" + webSocketSender);
+        queue.setId(Id++);
+        queues.add(queue);
+        return queue.getId();
     }
 
-    public List<Machine> getMachines() {
-        return machines;
+    public long addMachine() {
+        if (startQueue == null || endQueue == null) {
+            startQueue = new Queue(webSocketSender);
+            endQueue = new Queue(webSocketSender);
+            startQueue.setId(0);
+            endQueue.setId(1000);
+        }
+        Machine machine = new Machine(webSocketSender);
+        machine.setId(Id++);
+        machine.setBusy(false);
+        machines.add(machine);
+        return machine.getId();
     }
 
-    public void setMachines(List<Machine> machines) {
-        this.machines = machines;
+    public Machine getMachineById(long id) {
+        return machines.stream().filter(m -> m.getId() == id).findFirst().orElse(null);
+    }
+    public  int getQueueIndexById (long id){
+        for (int i = 0; i <queues.size(); i++) {
+            if (queues.get(i).getId()==id){
+                return i ;
+            }
+            
+        }
+      
+            return 0; 
+        
+    }
+    public  int getMachineIndexById (long id){
+        for (int i = 0; i <queues.size(); i++) {
+            if (queues.get(i).getId()==id){
+                return i ;
+            }
+            
+        }
+      
+            return 0; 
+        
     }
 
-    public List<Queue> getQueues() {
-        return queues;
+    public Queue getQueueById(long id) {
+        if (id == 0) {
+            return startQueue;
+        }
+        if (id == 1000) {
+            return endQueue;
+        }
+        return queues.stream().filter(q -> q.getId() == id).findFirst().orElse(null);
     }
 
-    public void setQueues(List<Queue> queues) {
-        this.queues = queues;
+    public void sendToFrontend(Map<String, String> message) {
+        webSocketSender.sendMessage("/topic/messages", message);
     }
 }

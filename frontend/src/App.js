@@ -1,10 +1,9 @@
-import React, { useState , useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import SimulatorCanvas from "./components/SimulatorCanvas";
 import Toolbar from "./components/Toolbar";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import "./App.css";
-
 
 function App() {
   const [elements, setElements] = useState([]);
@@ -26,10 +25,12 @@ function App() {
         console.log("Connected to WebSocket");
 
         // Subscribe to a topic
-        client.subscribe("/topic/messages", (message) => {
-          setMessages((prevMessages) => [...prevMessages, message.body]);
-          console.log("Received message: " + message.body);
-        });
+        client.subscribe('/topic/messages', (messageOutput) => {
+          console.log("Received message: ", messageOutput.body);
+          const message = JSON.parse(messageOutput.body);
+          console.log("Received: ", message);
+      });
+  
       },
       onStompError: (frame) => {
         console.error("Broker error: " + frame.headers["message"]);
@@ -54,15 +55,17 @@ function App() {
   const sendMessage = (message) => {
     console.log("sendMessage", message);
     const client = stompClientRef.current;
-    if (client && client.connected && message.trim() !== "") {
+    if (client && client.connected && message.message.trim() !== "") {
       console.log("Sending message: " + message);
       client.publish({
         destination: "/app/message", // Match this with your backend MessageMapping
-        body: message,
+        body: JSON.stringify(message), // Convert the message object to JSON message,
       });
       setInputMessage("");
     } else {
-      console.error("Unable to send message: STOMP client not connected or message is empty");
+      console.error(
+        "Unable to send message: STOMP client not connected or message is empty"
+      );
     }
   };
   return (
@@ -77,6 +80,7 @@ function App() {
         productCount={productCount}
         setProductCount={setProductCount}
         sendMessage={sendMessage}
+        messages={messages}
       />
       <SimulatorCanvas
         elements={elements}

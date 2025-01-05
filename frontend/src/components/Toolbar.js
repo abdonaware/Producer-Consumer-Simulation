@@ -4,7 +4,7 @@ import { PiQueueBold } from "react-icons/pi";
 import { IoSettings } from "react-icons/io5";
 import { AiOutlineClear } from "react-icons/ai";
 import { BiCartAdd } from "react-icons/bi";
-import axios from "axios";
+import StageServices from "../services/StageServices";
 
 const Toolbar = ({
   elements,
@@ -15,68 +15,56 @@ const Toolbar = ({
   productCount,
   setProductCount,
   sendMessage,
+  messages,
 }) => {
   const buttonClass =
     "px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2";
 
-  const addMachine =async () => {
-    try {
-      const response =  await axios.post("http://localhost:8080/addMachine", {
-      });
-      console.log(response.data);
-      setElements([
-        ...elements,
-        { id: response.data, type: "machine", x: 100, y: 100 },
-      ]);
-      console.log(elements);
-      
-    } catch (error) {
-      
-    }
-    
+  const addMachine = async () => {
+    const ID = await StageServices.addMachine();
+    setElements([...elements, { id: ID, type: "machine", x: 100, y: 100 }]);
   };
 
-  const addQueue = async() => {
-    
-
-    try {
-      const response = await axios.post("http://localhost:8080/addQueue", {
-      });
-      console.log(response.data);
-      setElements([
-        ...elements,
-        {
-          id:response.data,
-          type: "queue",
-          x: 300,
-          y: 100,
-          queueNumber:  response.data,
-          productCount: 0,
-        },
-      ]);
-    } catch (error) {
-      
-    }
+  const addQueue = async () => {
+    const maxQueueNumber = Math.max(
+      0,
+      ...elements
+        .filter((el) => el.type === "queue")
+        .filter((q) => q.queueNumber !== 1000)
+        .map((q) => q.queueNumber)
+    );
+    const ID = await StageServices.addQueue();
+    setElements([
+      ...elements,
+      {
+        id: ID,
+        type: "queue",
+        x: 300,
+        y: 100,
+        queueNumber: maxQueueNumber + 1,
+        productCount: 0,
+      },
+    ]);
   };
 
-  const clearStage = () => {
+  const clearStage = async () => {
+    await StageServices.clearStage();
     setElements([]);
     setConnections([]);
-    setIsRunning(false);
     setElements([
       {
         id: 0,
         type: "queue",
-        x: 150, // Left side
-        y: window.innerHeight / 2 - 80, // Middle vertically
+        x: 150,
+        y: window.innerHeight / 2 - 80,
         queueNumber: 0,
         productCount: productCount,
       },
       {
         id: 1000,
         type: "queue",
-        x: 1085, // Left side
-        y: window.innerHeight / 2 - 80, // Middle vertically
+        x: 1085,
+        y: window.innerHeight / 2 - 80,
         queueNumber: 1000,
         productCount: 0,
       },
@@ -94,12 +82,19 @@ const Toolbar = ({
     );
   };
   const handleRunnigChange = () => {
+    let data = {
+      message: "Stop Simulation",
+    };
     if (isRunning) {
-      sendMessage("Stop Simulation");
+      sendMessage(data);
+      setIsRunning(!isRunning);
     } else {
-    setIsRunning(!isRunning);
-    sendMessage("Start Simulation");
-  }};
+      setIsRunning(!isRunning);
+      data.message = "Start Simulation";
+      data.noOfProducts = productCount;
+      sendMessage(data);
+    }
+  };
 
   useEffect(() => {
     console.log("xx");
@@ -158,7 +153,9 @@ const Toolbar = ({
 
       {/* Combined Run/Pause Toggle Button */}
       <button
-        onClick={() =>{handleRunnigChange()}}
+        onClick={() => {
+          handleRunnigChange();
+        }}
         className={`${buttonClass} ${
           isRunning
             ? "bg-amber-500 hover:bg-amber-600 text-white"

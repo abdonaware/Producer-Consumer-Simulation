@@ -1,13 +1,17 @@
 package com.example.demo.Controller;
 
-import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import com.example.demo.Services.CreateService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.Services.CreateService;
 
 @RestController
 public class CreateController {
@@ -31,22 +35,35 @@ public class CreateController {
         return addCreateService.addQueue(entity);
     }
 
-    @DeleteMapping("/removeQueue")
-    public String removeQueue(@RequestBody String entity) {
-        addCreateService.removeMachine(Long.parseLong(entity));
-        return entity;
+    @DeleteMapping("/deleteQueue/{QueueId}")
+    public String removeQueue(@PathVariable("QueueId") long id) {
+        addCreateService.removeQueue(id);
+        return "deleted succfully ";
+    }
+    @DeleteMapping("/deleteMachine/{machineId}")
+    public String removeMAshine(@PathVariable("machineId") long id) {
+        addCreateService.removeMachine(id);
+        return "deleted succfully ";
     }
 
-    @PutMapping("/editMachineInQueue/{machineId}/{queueId}")
-    public String editMachineInQueue(@PathVariable String machineId, @PathVariable String queueId) {
-        addCreateService.editMachineInQueue(Long.parseLong(machineId), Long.parseLong(queueId));
-        return machineId + " " + queueId;
+    @PutMapping("/editMachineInQueue")
+    public ResponseEntity<?> editMachineInQueue(@RequestBody Map<String, String> body) {
+        boolean res = addCreateService.editMachineInQueue(Long.parseLong(body.get("machineId")), Long.parseLong(body.get("queueId")));
+        if (res) {
+            return ResponseEntity.ok().body(true);
+        } else {
+            return ResponseEntity.badRequest().body(false);
+        }
     }
 
-    @PutMapping("/editMachineOutQueue/{machineId}/{queueId}")
-    public String editMachineOutQueue(@PathVariable String machineId, @PathVariable String queueId) {
-        addCreateService.editMachineInQueue(Long.parseLong(machineId), Long.parseLong(queueId));
-        return machineId + " " + queueId;
+    @PutMapping("/editMachineOutQueue")
+    public ResponseEntity<?> editMachineOutQueue(@RequestBody Map<String, String> body) {
+        boolean res = addCreateService.editMachineOutQueue(Long.parseLong(body.get("machineId")), Long.parseLong(body.get("queueId")));
+        if (res) {
+            return ResponseEntity.ok().body(true);
+        } else {
+            return ResponseEntity.badRequest().body(false);
+        }
     }
 
 }
