@@ -1,11 +1,12 @@
 package com.example.demo.DesginPattern;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import com.example.demo.Classes.Machine;
-import com.example.demo.WebSocketSender;
+import  com.example.demo.WebSocketSender;
 
 public class Concurrency {
 
@@ -27,10 +28,14 @@ public class Concurrency {
                 System.out.println("enter add mashine in concurrecy");
 
                 try {
+                    Map<String,String> data = Map.of("type", "machine", "id", String.valueOf(mashine.getId()), "isBusy", String.valueOf(mashine.isBusy()));
+                    webSocketSender.sendMessage("/topic/messages", data);
                     System.out.println("Machine " + mashine.getId() + " has started processing.");
                     Thread.sleep(mashine.getProcessingTime() * 100);
                     System.out.println("Machine " + mashine.getId() + " has finished processing.");
                     mashine.setBusy(false);
+                    data = Map.of("type", "machine", "id", String.valueOf(mashine.getId()), "isBusy", String.valueOf(mashine.isBusy()));
+                    webSocketSender.sendMessage("/topic/messages", data);
 
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();

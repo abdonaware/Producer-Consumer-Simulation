@@ -47,9 +47,10 @@ public class Machine implements Observer {
             q.processProduct();
         }
         for (Queue q : outQueues) {
-            q.setPendingProduct(q.getPendingProduct() + 1);
+            q.incrmentProducts();
             q.processProduct();
         }
+
     }
 
     public void addInQueue(Queue q) {
@@ -78,7 +79,6 @@ public class Machine implements Observer {
             } catch (Exception e) {
                 System.out.println("Machine " + id + " was interrupted.");
             }
-            notifyAllQueue();
         }
     }
 

@@ -44,6 +44,7 @@ public class SimulationService {
     public Map<String,String> startSimulation(int noOfProducts) {
         if (checkIfSimulationCanStart()) {
             projectRepository.startQueue.setPendingProduct(noOfProducts);
+            projectRepository.endQueue.setPendingProduct(0);
             projectRepository.startQueue.processProduct();
             Map<String,String> response = Map.of("message", "Simulation started"); 
             return response;
