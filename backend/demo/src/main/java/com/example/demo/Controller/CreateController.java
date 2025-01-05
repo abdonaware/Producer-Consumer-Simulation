@@ -38,12 +38,12 @@ public class CreateController {
     @DeleteMapping("/removeQueue/{QueueId}")
     public String removeQueue(@PathVariable("QueueId") long id) {
         addCreateService.removeQueue(id);
-        return String.valueOf(id);
+        return "deleted succfully ";
     }
     @DeleteMapping("/removeMachine/{machineId}")
     public String removeMAshine(@PathVariable("machineId") long id) {
         addCreateService.removeQueue(id);
-        return String.valueOf(id);
+        return "deleted succfully ";
     }
 
     @PutMapping("/editMachineInQueue")
