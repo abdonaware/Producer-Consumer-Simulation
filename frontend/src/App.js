@@ -4,6 +4,7 @@ import Toolbar from "./components/Toolbar";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import "./App.css";
+import StageServices from "./services/StageServices";
 
 function App() {
   const [elements, setElements] = useState([]);
@@ -15,6 +16,10 @@ function App() {
   const stompClientRef = useRef(null);
 
   useEffect(() => {
+    const handleRefresh = async () => {
+      await StageServices.clearStage();
+    };
+    handleRefresh();
     // Create a new Stomp client
     const client = new Client({
       webSocketFactory: () => new SockJS("http://localhost:8080/ws"), // Replace with your WebSocket endpoint
@@ -25,12 +30,11 @@ function App() {
         console.log("Connected to WebSocket");
 
         // Subscribe to a topic
-        client.subscribe('/topic/messages', (messageOutput) => {
+        client.subscribe("/topic/messages", (messageOutput) => {
           console.log("Received message: ", messageOutput.body);
           const message = JSON.parse(messageOutput.body);
           console.log("Received: ", message);
-      });
-  
+        });
       },
       onStompError: (frame) => {
         console.error("Broker error: " + frame.headers["message"]);
