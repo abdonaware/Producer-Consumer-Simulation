@@ -102,28 +102,24 @@ const Toolbar = ({
     console.log(elements);
 
     setElements(
-      elements.map((el) =>
-        el.type === "queue" && el.id === 0
-          ? { ...el, productCount: productCount }
-          : el
-      )
+      elements.map((el) => {
+        if (el.type === "queue") {
+          if (el.id === 1000) {
+            return { ...el, productCount: 0 };
+          }
+          if (el.id === 0) {
+            return { ...el, productCount: productCount };
+          }
+        }
+        return el;
+      })
     );
 
-    setElements(
-      elements.map((el) =>
-        el.type === "queue" && el.id === 1000 ? { ...el, productCount: 0 } : el
-      )
-    );
-
-    console.log(elements);
-    setTimeout(() => {
-      let data = {};
-
-      setIsRunning(!isRunning);
-      data.message = "Start Simulation";
-      data.noOfProducts = productCount;
-      sendMessage(data);
-    }, 100);
+    let data = {};
+    setIsRunning(true);
+    data.message = "Start Simulation";
+    data.noOfProducts = productCount;
+    sendMessage(data);
   };
 
   useEffect(() => {
