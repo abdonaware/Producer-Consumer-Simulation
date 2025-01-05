@@ -35,14 +35,14 @@ public class CreateController {
         return addCreateService.addQueue(entity);
     }
 
-    @DeleteMapping("/removeQueue/{QueueId}")
+    @DeleteMapping("/deleteQueue/{QueueId}")
     public String removeQueue(@PathVariable("QueueId") long id) {
         addCreateService.removeQueue(id);
         return "deleted succfully ";
     }
-    @DeleteMapping("/removeMachine/{machineId}")
+    @DeleteMapping("/deleteMachine/{machineId}")
     public String removeMAshine(@PathVariable("machineId") long id) {
-        addCreateService.removeQueue(id);
+        addCreateService.removeMachine(id);
         return "deleted succfully ";
     }
 
