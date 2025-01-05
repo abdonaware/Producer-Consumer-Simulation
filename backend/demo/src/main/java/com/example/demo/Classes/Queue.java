@@ -31,12 +31,12 @@ public class Queue implements Observer {
         this.webSocketSender = webSocketSender;
         pendingProduct = 0 ; 
     }
-    public void incrmentProducts(){
+    public synchronized  void incrmentProducts(){
         pendingProduct++;
         Map<String,String> data= Map.of("type", "queue", "id", String.valueOf(id), "pendingProduct", String.valueOf(pendingProduct)); 
         webSocketSender.sendMessage("/topic/messages", data);
     }
-    public void decrmentProducts(){
+    public  synchronized void decrmentProducts(){
         pendingProduct--;
         Map<String,String> data= Map.of("type", "queue", "id", String.valueOf(id), "pendingProduct", String.valueOf(pendingProduct)); 
         webSocketSender.sendMessage("/topic/messages", data);
@@ -71,8 +71,9 @@ public class Queue implements Observer {
         outMashines.remove(m);
     }
 
-    public void processProduct() {
+    public synchronized void  processProduct() {
         if (pendingProduct > 0) {
+            
             for (Machine m : inMashines) {
                 if (m.isBusy()==false) {
                     m.setPendingProduct(true);
@@ -80,6 +81,9 @@ public class Queue implements Observer {
                     Map<String, String> message = Map.of("message", "Machine " + m.getId() + " is processing a product");
                     webSocketSender.sendMessage( "/topic/messages",message);
                     m.processProduct();
+                }
+                if(pendingProduct<=0){
+                    break;
                 }
             }
         }

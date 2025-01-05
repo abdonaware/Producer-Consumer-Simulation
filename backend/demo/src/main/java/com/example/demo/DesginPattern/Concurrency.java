@@ -10,7 +10,7 @@ import  com.example.demo.WebSocketSender;
 
 public class Concurrency {
 
-    final static int maxNOfMashines = 5;
+    final static int maxNOfMashines = 10;
     private WebSocketSender webSocketSender;
 
     public Concurrency(WebSocketSender webSocketSender) {
@@ -21,7 +21,7 @@ public class Concurrency {
     private final ExecutorService executor = Executors.newFixedThreadPool(maxNOfMashines);
 
     public void addMashines(Machine mashine) {
-        System.out.println("enter add mashine in concurrecy" + mashine.getProcessingTime());
+        System.out.println("enter add mashine in concurrecy"+mashine.getId() );
         if (noOfConcurrentMashines < maxNOfMashines) {
             noOfConcurrentMashines++;
             executor.submit(() -> {
@@ -31,7 +31,7 @@ public class Concurrency {
                     Map<String,String> data = Map.of("type", "machine", "id", String.valueOf(mashine.getId()), "isBusy", String.valueOf(mashine.isBusy()));
                     webSocketSender.sendMessage("/topic/messages", data);
                     System.out.println("Machine " + mashine.getId() + " has started processing.");
-                    Thread.sleep(mashine.getProcessingTime() * 100);
+                    Thread.sleep(mashine.getProcessingTime() * 1000);
                     System.out.println("Machine " + mashine.getId() + " has finished processing.");
                     mashine.setBusy(false);
                     data = Map.of("type", "machine", "id", String.valueOf(mashine.getId()), "isBusy", String.valueOf(mashine.isBusy()));
@@ -53,6 +53,10 @@ public class Concurrency {
     private synchronized void removeMashine() {
         if (noOfConcurrentMashines > 0) {
             noOfConcurrentMashines--;
+            if (noOfConcurrentMashines == 0) {
+                System.out.println("All machines have finished processing.");
+                webSocketSender.sendMessage("/topic/messages", Map.of("type", "end", "message", "All machines have finished processing."));
+            }
         }
     }
 
