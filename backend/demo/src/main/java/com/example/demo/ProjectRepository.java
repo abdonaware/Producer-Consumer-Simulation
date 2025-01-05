@@ -27,7 +27,7 @@ public class ProjectRepository {
     public ProjectRepository() {
         machines = new ArrayList<>();
         queues = new ArrayList<>();
-       
+
     }
 
     public long addQueue() {
@@ -61,28 +61,31 @@ public class ProjectRepository {
     public Machine getMachineById(long id) {
         return machines.stream().filter(m -> m.getId() == id).findFirst().orElse(null);
     }
-    public  int getQueueIndexById (long id){
-        for (int i = 0; i <queues.size(); i++) {
-            if (queues.get(i).getId()==id){
-                return i ;
+
+    public int getQueueIndexById(long id) {
+        for (int i = 0; i < queues.size(); i++) {
+            if (queues.get(i).getId() == id) {
+                return i;
             }
-            
+
         }
-      
-            return 0; 
-        
+
+        return 0;
+
     }
-    public  int getMachineIndexById (long id){
-        for (int i = 0; i <queues.size(); i++) {
-            if (queues.get(i).getId()==id){
-                return i ;
+
+    public int getMachineIndexById(long id) {
+        for (int i = 0; i < queues.size(); i++) {
+            if (queues.get(i).getId() == id) {
+                return i;
             }
-            
+
         }
-      
-            return 0; 
-        
+
+        return 0;
+
     }
+
     public void saveSnapShot() {
         snapShot = new Snapshot(machines, queues, startQueue, endQueue, Id);
     }

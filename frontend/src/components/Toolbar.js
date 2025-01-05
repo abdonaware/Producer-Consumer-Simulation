@@ -4,6 +4,7 @@ import { PiQueueBold } from "react-icons/pi";
 import { IoSettings } from "react-icons/io5";
 import { AiOutlineClear } from "react-icons/ai";
 import { BiCartAdd } from "react-icons/bi";
+import { RiRestartFill } from "react-icons/ri";
 import StageServices from "../services/StageServices";
 
 const Toolbar = ({
@@ -96,6 +97,39 @@ const Toolbar = ({
     }
   };
 
+  const handleRestart = async () => {
+    await StageServices.restart();
+    console.log(elements);
+
+    setElements(
+      elements.map((el) =>
+        el.type === "queue" && el.id === 0
+          ? { ...el, productCount: productCount }
+          : el
+      )
+    );
+
+    setElements(
+      elements.map((el) =>
+        el.type === "queue" && el.id === 1000 ? { ...el, productCount: 0 } : el
+      )
+    );
+    console.log(elements);
+
+    let data = {
+      message: "Stop Simulation",
+    };
+    if (isRunning) {
+      sendMessage(data);
+      setIsRunning(!isRunning);
+    } else {
+      setIsRunning(!isRunning);
+      data.message = "Start Simulation";
+      data.noOfProducts = productCount;
+      sendMessage(data);
+    }
+  };
+
   useEffect(() => {
     if (elements.length === 0) {
       setElements([
@@ -163,6 +197,22 @@ const Toolbar = ({
       >
         {isRunning ? <FaPause size={16} /> : <FaPlay size={16} />}
         {isRunning ? "Pause" : "Run"}
+      </button>
+
+      {/* restart button */}
+      <button
+        onClick={() => {
+          handleRestart();
+        }}
+        disabled={isRunning}
+        className={`${buttonClass} ${
+          isRunning
+            ? "bg-gray-100 cursor-not-allowed text-gray-400"
+            : "bg-orange-500 hover:bg-orange-600 text-white"
+        }`}
+      >
+        <RiRestartFill size={24} />
+        Restart
       </button>
 
       <div className="h-8 w-px bg-gray-200 mx-2" />
