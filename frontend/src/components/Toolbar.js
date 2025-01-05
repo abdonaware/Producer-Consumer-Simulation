@@ -15,6 +15,7 @@ const Toolbar = ({
   productCount,
   setProductCount,
   sendMessage,
+  messages
 }) => {
   const buttonClass =
     "px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2";
@@ -94,11 +95,17 @@ const Toolbar = ({
     );
   };
   const handleRunnigChange = () => {
+    let data={
+      "message": "Stop Simulation"
+    }
     if (isRunning) {
-      sendMessage("Stop Simulation");
+      sendMessage(data);
+      setIsRunning(!isRunning); 
     } else {
     setIsRunning(!isRunning);
-    sendMessage("Start Simulation");
+    data.message="Start Simulation";
+    data.noOfProducts=productCount;
+    sendMessage(data);
   }};
 
   useEffect(() => {

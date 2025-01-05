@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 import com.example.demo.Classes.Machine;
 import com.example.demo.Classes.Queue;
 import com.example.demo.ProjectRepository;
+
 @Service
 public class CreateService {
+
     private ProjectRepository repository = ProjectRepository.getInstance();
 
     public long addMachine(String entity) {
@@ -38,18 +40,39 @@ public class CreateService {
         repository.queues.remove((int) id);
     }
 
-    public void editMachineInQueue(long machineId, long queueId) {
-        Machine machine = repository.machines.get((int) machineId);
-        Queue queue = repository.queues.get((int) queueId);
+    public Boolean editMachineInQueue(long machineId, long queueId) {
+        Machine machine = repository.getMachineById(machineId);
+        System.out.println("machine :"+machine);    
+        if (machine == null) {
+            System.out.println("Machine not found");
+            return false;
+        }
+        Queue queue = repository.getQueueById(queueId);
+        if (queue == null) {
+            System.out.println("Queue not found");
+            return false;
+        }
+        System.out.println("queue :"+queue);
         queue.addMashine(machine);
         machine.addInQueue(queue);
+        return true;
     }
 
-    public void editMachineOutQueue(long machineId, long queueId) {
-        Machine machine = repository.machines.get((int) machineId);
-        Queue queue = repository.queues.get((int) queueId);
+    public boolean  editMachineOutQueue(long machineId, long queueId) {
+        Machine machine = repository.getMachineById(machineId);
+        System.out.println("machine :"+machine);    
+        if (machine == null) {
+            System.out.println("Machine not found");
+            return false;
+        }
+        Queue queue = repository.getQueueById(queueId);
+        if (queue == null) {
+            System.out.println("Queue not found");
+            return false;
+        }
         queue.addOutMashine(machine);
         machine.addOutQueue(queue);
+        return true;
     }
 
 }

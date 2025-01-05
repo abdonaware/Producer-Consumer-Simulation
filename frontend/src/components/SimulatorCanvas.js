@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Stage, Layer, Arrow } from "react-konva";
 import Machine from "./Machine";
 import Queue from "./Queue";
+import axios from "axios";
 
 const SimulatorCanvas = ({
   elements,
@@ -30,16 +31,40 @@ const SimulatorCanvas = ({
   };
 
   // Start a connection when clicking on a source element
-  const startConnection = (id) => setTempConnection({ from: id });
+  const startConnection = (id,type) => setTempConnection({ from: id , type: type });
 
   // Complete a connection when clicking on a target element
-  const completeConnection = (id) => {
+  const completeConnection = async (id,type) => {
     console.log("completeConnection", id);
+    console.log("tempConnection", tempConnection);
     if (tempConnection && tempConnection.from !== id) {
-      setConnections([...connections, { from: tempConnection.from, to: id }]);
-      setTempConnection(null);
+      if (tempConnection.type === "queue"&& type === "machine") {
+        try {
+
+          await axios.put("http://localhost:8080/editMachineInQueue", {
+            queueId: tempConnection.from,
+            machineId: id,
+          });
+          setConnections([...connections, { from: tempConnection.from, to: id }]);
+          setTempConnection(null);
+        } catch (error) {
+          console.error(error);
+        }
+    }else if (tempConnection.type === "machine"&& type === "queue") {
+      try {
+        await axios.put("http://localhost:8080/editMachineOutQueue", {
+          machineId: tempConnection.from,
+          queueId: id,
+        });
+        setConnections([...connections, { from: tempConnection.from, to: id }]);
+        setTempConnection(null);
+      } catch (error) {
+        console.error(error);
+      }
+    }else{
+      setTempConnection({ from: id , type: type });
     }
-  };
+  }};
 
   // Simulate customer movement along connections
   //   useEffect(() => {
@@ -127,8 +152,8 @@ const SimulatorCanvas = ({
                 onDelete={() => handleDelete(el.id)}
                 onClick={() =>
                   tempConnection
-                    ? completeConnection(el.id)
-                    : startConnection(el.id)
+                    ? completeConnection(el.id, "machine")
+                    : startConnection(el.id,"machine")
                 }
                 isRunning={isRunning}
               />
@@ -140,8 +165,8 @@ const SimulatorCanvas = ({
                 onDelete={() => handleDelete(el.id)}
                 onClick={() =>
                   tempConnection
-                    ? completeConnection(el.id)
-                    : startConnection(el.id)
+                    ? completeConnection(el.id, "queue")
+                    : startConnection(el.id,"queue")
                 }
                 queueNumber={el.queueNumber}
                 productCount={el.productCount}

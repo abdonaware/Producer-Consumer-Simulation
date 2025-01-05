@@ -1,11 +1,14 @@
 package com.example.demo.Classes;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.example.demo.WebSocketSender;
+import com.example.demo.Controller.SimulationController;
 import com.example.demo.DesginPattern.Observer;
+import com.example.demo.Services.SimulationService;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,10 +17,13 @@ import lombok.Setter;
 @Getter
 public class Queue implements Observer {
 
+    
+
     @Autowired
-    private WebSocketSender webSocketSender;
-    private List<Machine> inMashines;
-    private List<Machine> outMashines;
+    private SimulationService simulationService;
+    private SimulationController simulationController = new SimulationController(simulationService);
+    private List<Machine> inMashines = new ArrayList<>();
+    private List<Machine> outMashines = new ArrayList<>();
     private List<Products> products;
     private int pendingProduct;
     private int id;
@@ -65,7 +71,8 @@ public class Queue implements Observer {
                 if (!m.isBusy()) {
                     m.setBusy(true);
                     m.setPendingProduct(true);
-                    webSocketSender.sendMessage("/topic/machine", "Machine " + m.getId() + " is processing a product");
+                    Map<String, String> message = Map.of("message", "Machine " + m.getId() + " is processing a product");
+                    simulationController.sendToWebSocket( message);
                     pendingProduct--;
                     m.processProduct();
 

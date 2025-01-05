@@ -1,4 +1,5 @@
 package com.example.demo.Services;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -9,7 +10,8 @@ public class SimulationService {
     private ProjectRepository projectRepository = ProjectRepository.getInstance();
 
     public boolean checkIfSimulationCanStart() {
-        if(projectRepository.machines.size() == 0 || projectRepository.queues.size() == 0){
+        if(projectRepository.machines.size() == 0){
+            System.out.println("Machines or Queues are not present");
             return false;
         }
         for (int i = 0; i < projectRepository.machines.size(); i++) {
@@ -37,13 +39,15 @@ public class SimulationService {
         return true;
     }
 
-    public String startSimulation(int noOfProducts) {
+    public Map<String,String> startSimulation(int noOfProducts) {
         if (checkIfSimulationCanStart()) {
             projectRepository.startQueue.setPendingProduct(noOfProducts);
             projectRepository.startQueue.processProduct();
-            return "Simulation started";
+            Map<String,String> response = Map.of("message", "Simulation started"); 
+            return response;
         }else{
-            return "Simulation can't start";
+            // response.replace("message", "Simulation can't start");
+            return Map.of("message", "Simulation can't start");
         }   
     }
 }
