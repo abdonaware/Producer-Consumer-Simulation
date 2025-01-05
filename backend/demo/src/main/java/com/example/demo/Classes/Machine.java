@@ -16,10 +16,8 @@ import lombok.Setter;
 @Setter
 public class Machine implements Observer {
 
-    
-
     private WebSocketSender webSocketSender;
-    private Concurrency concurrency ;
+    private Concurrency concurrency;
 
     private int id;
     private boolean isBusy;// true if the mashine is working on a product
@@ -39,15 +37,24 @@ public class Machine implements Observer {
     @Override
     public void notifyAllQueue() {
         Map<String, String> message = Map.of("message", "Machine " + id + " is finish the product and is available");
-        System.out.println("message: " + message);  
+        System.out.println("message: " + message);
 
-        webSocketSender.sendMessage("/topic/messages",message);
+        webSocketSender.sendMessage("/topic/messages", message);
         for (Queue q : inQueues) {
 
             q.processProduct();
         }
+        int minProduct = 0;
+        int minIndex =0  ;
+        for (int i = 0; i < outQueues.size(); i++) {
+           if(outQueues.get(i).getPendingProduct() < minProduct){
+               minProduct = outQueues.get(i).getPendingProduct();
+               minIndex = i;
+           }
+        }
+
+        outQueues.get(minIndex).incrmentProducts();
         for (Queue q : outQueues) {
-            q.incrmentProducts();
             q.processProduct();
         }
 
@@ -75,7 +82,7 @@ public class Machine implements Observer {
             pendingProduct = false;
             try {
                 concurrency.addMashines(this);
-                
+
             } catch (Exception e) {
                 System.out.println("Machine " + id + " was interrupted.");
             }
