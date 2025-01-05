@@ -43,6 +43,7 @@ public class SimulationService {
 
     public Map<String,String> startSimulation(int noOfProducts) {
         if (checkIfSimulationCanStart()) {
+            projectRepository.saveSnapShot();
             projectRepository.startQueue.setPendingProduct(noOfProducts);
             projectRepository.endQueue.setPendingProduct(0);
             projectRepository.startQueue.processProduct();

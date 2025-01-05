@@ -88,5 +88,9 @@ public class Machine implements Observer {
             }
         }
     }
+    public void exitProcess() {
+        concurrency.shutdown();
+        
+    }
 
 }

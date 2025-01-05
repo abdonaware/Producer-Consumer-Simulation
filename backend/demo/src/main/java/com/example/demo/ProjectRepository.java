@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.demo.Classes.Machine;
 import com.example.demo.Classes.Queue;
+import com.example.demo.DesginPattern.Snapshot;
 
 @Repository
 public class ProjectRepository {
@@ -18,6 +19,7 @@ public class ProjectRepository {
     public int Id = 1;
     public List<Machine> machines;
     public List<Queue> queues;
+    Snapshot snapShot = null;
 
     @Autowired
     private WebSocketSender webSocketSender;
@@ -80,6 +82,17 @@ public class ProjectRepository {
       
             return 0; 
         
+    }
+    public void saveSnapShot() {
+        snapShot = new Snapshot(machines, queues, startQueue, endQueue, Id);
+    }
+
+    public void RestoreSnapShot() {
+        queues = snapShot.queues;
+        machines = snapShot.machines;
+        startQueue = snapShot.startQueue;
+        endQueue = snapShot.endQueue;
+        Id = snapShot.Id;
     }
 
     public Queue getQueueById(long id) {
