@@ -80,7 +80,6 @@ public class Queue implements Observer {
                     Map<String, String> message = Map.of("message", "Machine " + m.getId() + " is processing a product");
                     webSocketSender.sendMessage( "/topic/messages",message);
                     m.processProduct();
-                    break;
                 }
             }
         }
