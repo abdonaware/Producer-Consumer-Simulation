@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Stage, Layer, Arrow } from "react-konva";
 import Machine from "./Machine";
 import Queue from "./Queue";
-import axios from "axios";
+import StageServices from "../services/StageServices";
 
 const SimulatorCanvas = ({
   elements,
@@ -23,7 +23,12 @@ const SimulatorCanvas = ({
   };
 
   // Add delete handler
-  const handleDelete = (id) => {
+  const handleDelete = async (id, type) => {
+    if (type === "machine") {
+      await StageServices.deleteMachine(id);
+    } else if (type === "queue") {
+      await StageServices.deleteQueue(id);
+    }
     setElements(elements.filter((el) => el.id !== id));
     setConnections(
       connections.filter((conn) => conn.from !== id && conn.to !== id)
@@ -31,40 +36,39 @@ const SimulatorCanvas = ({
   };
 
   // Start a connection when clicking on a source element
-  const startConnection = (id,type) => setTempConnection({ from: id , type: type });
+  const startConnection = (id, type) =>
+    setTempConnection({ from: id, type: type });
 
   // Complete a connection when clicking on a target element
-  const completeConnection = async (id,type) => {
+  const completeConnection = async (id, type) => {
     console.log("completeConnection", id);
     console.log("tempConnection", tempConnection);
+    if (
+      connections.some(
+        (conn) =>
+          (conn.from === tempConnection.from && conn.to === id) ||
+          (conn.from === id && conn.to === tempConnection.from)
+      )
+    ) {
+      console.log("Connection already exists");
+      setTempConnection(null);
+      return;
+    }
     if (tempConnection && tempConnection.from !== id) {
-      if (tempConnection.type === "queue"&& type === "machine") {
-        try {
-
-          await axios.put("http://localhost:8080/editMachineInQueue", {
-            queueId: tempConnection.from,
-            machineId: id,
-          });
-          setConnections([...connections, { from: tempConnection.from, to: id }]);
-          setTempConnection(null);
-        } catch (error) {
-          console.error(error);
-        }
-    }else if (tempConnection.type === "machine"&& type === "queue") {
-      try {
-        await axios.put("http://localhost:8080/editMachineOutQueue", {
-          machineId: tempConnection.from,
-          queueId: id,
-        });
+      if (tempConnection.type === "queue" && type === "machine") {
+        await StageServices.addMachineInQueue(tempConnection.from, id);
         setConnections([...connections, { from: tempConnection.from, to: id }]);
         setTempConnection(null);
-      } catch (error) {
-        console.error(error);
+      } else if (tempConnection.type === "machine" && type === "queue") {
+        await StageServices.addMachineOutQueue(tempConnection.from, id);
+        setConnections([...connections, { from: tempConnection.from, to: id }]);
+        setTempConnection(null);
+      } else {
+        setTempConnection(null);
       }
-    }else{
-      setTempConnection({ from: id , type: type });
     }
-  }};
+    console.log("Coneection", connections);
+  };
 
   // Simulate customer movement along connections
   //   useEffect(() => {
@@ -149,11 +153,11 @@ const SimulatorCanvas = ({
                 key={el.id}
                 {...el}
                 onDrag={handleDrag}
-                onDelete={() => handleDelete(el.id)}
+                onDelete={() => handleDelete(el.id, "machine")}
                 onClick={() =>
                   tempConnection
                     ? completeConnection(el.id, "machine")
-                    : startConnection(el.id,"machine")
+                    : startConnection(el.id, "machine")
                 }
                 isRunning={isRunning}
               />
@@ -162,11 +166,11 @@ const SimulatorCanvas = ({
                 key={el.id}
                 {...el}
                 onDrag={handleDrag}
-                onDelete={() => handleDelete(el.id)}
+                onDelete={() => handleDelete(el.id, "queue")}
                 onClick={() =>
                   tempConnection
                     ? completeConnection(el.id, "queue")
-                    : startConnection(el.id,"queue")
+                    : startConnection(el.id, "queue")
                 }
                 queueNumber={el.queueNumber}
                 productCount={el.productCount}
