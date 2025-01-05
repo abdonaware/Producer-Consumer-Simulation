@@ -4,6 +4,7 @@ import { PiQueueBold } from "react-icons/pi";
 import { IoSettings } from "react-icons/io5";
 import { AiOutlineClear } from "react-icons/ai";
 import { BiCartAdd } from "react-icons/bi";
+import { RiRestartFill } from "react-icons/ri";
 import StageServices from "../services/StageServices";
 
 const Toolbar = ({
@@ -15,7 +16,6 @@ const Toolbar = ({
   productCount,
   setProductCount,
   sendMessage,
-  messages,
 }) => {
   const buttonClass =
     "px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2";
@@ -45,6 +45,7 @@ const Toolbar = ({
         productCount: 0,
       },
     ]);
+    console.log(elements);
   };
 
   const clearStage = async () => {
@@ -96,8 +97,32 @@ const Toolbar = ({
     }
   };
 
+  const handleRestart = async () => {
+    await StageServices.restart();
+    console.log(elements);
+
+    setElements(
+      elements.map((el) => {
+        if (el.type === "queue") {
+          if (el.id === 1000) {
+            return { ...el, productCount: 0 };
+          }
+          if (el.id === 0) {
+            return { ...el, productCount: productCount };
+          }
+        }
+        return el;
+      })
+    );
+
+    let data = {};
+    setIsRunning(true);
+    data.message = "Start Simulation";
+    data.noOfProducts = productCount;
+    sendMessage(data);
+  };
+
   useEffect(() => {
-    console.log("xx");
     if (elements.length === 0) {
       setElements([
         {
@@ -164,6 +189,22 @@ const Toolbar = ({
       >
         {isRunning ? <FaPause size={16} /> : <FaPlay size={16} />}
         {isRunning ? "Pause" : "Run"}
+      </button>
+
+      {/* restart button */}
+      <button
+        onClick={() => {
+          handleRestart();
+        }}
+        disabled={isRunning}
+        className={`${buttonClass} ${
+          isRunning
+            ? "bg-gray-100 cursor-not-allowed text-gray-400"
+            : "bg-orange-500 hover:bg-orange-600 text-white"
+        }`}
+      >
+        <RiRestartFill size={24} />
+        Restart
       </button>
 
       <div className="h-8 w-px bg-gray-200 mx-2" />

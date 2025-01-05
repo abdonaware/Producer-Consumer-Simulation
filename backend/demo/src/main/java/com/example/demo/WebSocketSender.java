@@ -12,7 +12,6 @@ public class WebSocketSender {
     private final SimpMessagingTemplate messagingTemplate;
     private WebSocketSender Instance;
 
-    @Autowired
     public WebSocketSender(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
         this.messagingTemplate.setSendTimeout(100);
@@ -24,11 +23,8 @@ public class WebSocketSender {
         }
         return Instance;
     }
-     
 
     public void sendMessage(String topic, Map<String, String> message) {
         messagingTemplate.convertAndSend(topic, message);
     }
 }
-
-

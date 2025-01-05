@@ -4,33 +4,42 @@ import Toolbar from "./components/Toolbar";
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import "./App.css";
+import StageServices from "./services/StageServices";
 
 function App() {
   const [elements, setElements] = useState([]);
   const [connections, setConnections] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
   const [productCount, setProductCount] = useState(Number(0));
-  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState(null);
+  const messageQueueRef = useRef([]);
   const [inputMessage, setInputMessage] = useState("");
   const stompClientRef = useRef(null);
 
   useEffect(() => {
-    // Create a new Stomp client
+    const handleRefresh = async () => {
+      await StageServices.clearStage();
+    };
+    handleRefresh();
+
     const client = new Client({
-      webSocketFactory: () => new SockJS("http://localhost:8080/ws"), // Replace with your WebSocket endpoint
+      webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
       debug: (str) => {
         console.log(str);
       },
       onConnect: () => {
         console.log("Connected to WebSocket");
 
-        // Subscribe to a topic
-        client.subscribe('/topic/messages', (messageOutput) => {
+        client.subscribe("/topic/messages", (messageOutput) => {
           console.log("Received message: ", messageOutput.body);
-          const message = JSON.parse(messageOutput.body);
-          console.log("Received: ", message);
-      });
-  
+          const parsedMessage = JSON.parse(messageOutput.body);
+
+          // Add the message to the queue
+          messageQueueRef.current.push(parsedMessage);
+
+          // Trigger state update to process the queue
+          setMessage(parsedMessage); // This triggers the useEffect
+        });
       },
       onStompError: (frame) => {
         console.error("Broker error: " + frame.headers["message"]);
@@ -38,19 +47,60 @@ function App() {
       },
     });
 
-    // Assign client to the ref
     stompClientRef.current = client;
-
-    // Activate the connection
     client.activate();
 
-    // Cleanup on component unmount
     return () => {
       if (stompClientRef.current) {
         stompClientRef.current.deactivate();
       }
     };
   }, []);
+
+  useEffect(() => {
+    const processMessages = () => {
+      while (messageQueueRef.current.length > 0) {
+        const currentMessage = messageQueueRef.current.shift(); // Get the next message in the queue
+        console.log("Processing message: ", currentMessage);
+        console.log(elements);
+
+        if (currentMessage && currentMessage.type === "queue") {
+          if (
+            parseInt(currentMessage.id) === 1000 &&
+            parseInt(currentMessage.pendingProduct) === productCount
+          ) {
+            console.log("Simulation completed");
+
+            setIsRunning(false);
+          }
+          setElements((prevElements) =>
+            prevElements.map((el) =>
+              el.id === parseInt(currentMessage.id)
+                ? {
+                    ...el,
+                    productCount: parseInt(currentMessage.pendingProduct),
+                  }
+                : el
+            )
+          );
+        } else if (currentMessage && currentMessage.type === "machine") {
+          setElements((prevElements) =>
+            prevElements.map((el) =>
+              el.id === parseInt(currentMessage.id)
+                ? {
+                    ...el,
+                    color:
+                      currentMessage.isBusy === "true" ? "#DD524C" : "#3b82f6",
+                  }
+                : el
+            )
+          );
+        }
+      }
+    };
+
+    processMessages();
+  }, [message]);
 
   const sendMessage = (message) => {
     console.log("sendMessage", message);
@@ -80,7 +130,6 @@ function App() {
         productCount={productCount}
         setProductCount={setProductCount}
         sendMessage={sendMessage}
-        messages={messages}
       />
       <SimulatorCanvas
         elements={elements}

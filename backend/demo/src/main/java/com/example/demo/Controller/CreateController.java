@@ -65,5 +65,12 @@ public class CreateController {
             return ResponseEntity.badRequest().body(false);
         }
     }
+    @DeleteMapping("/clearStage")
+    public String clear() {
+        
+        addCreateService.clear();
+        return "clear succfully ";
+    }
+    
 
 }

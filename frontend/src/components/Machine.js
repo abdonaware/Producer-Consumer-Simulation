@@ -1,7 +1,7 @@
 import React from "react";
 import { Group, Rect, Text, Circle } from "react-konva";
 
-const Machine = ({ id, x, y, onDrag, onClick, onDelete, isRunning }) => {
+const Machine = ({ id, x, y, onDrag, onClick, onDelete, isRunning, color }) => {
   return (
     <Group
       x={x}
@@ -12,10 +12,10 @@ const Machine = ({ id, x, y, onDrag, onClick, onDelete, isRunning }) => {
       <Rect
         width={120}
         height={60}
-        fill="#3b82f6"
+        fill={color ? color : "#3b82f6"}
         cornerRadius={8}
         strokeWidth={2}
-        stroke="#2563eb"  // Darker blue border
+        stroke="#2563eb" // Darker blue border
         shadowColor="rgba(0,0,0,0.2)"
         shadowBlur={10}
         shadowOffsetX={3}
@@ -30,7 +30,7 @@ const Machine = ({ id, x, y, onDrag, onClick, onDelete, isRunning }) => {
         align="center"
         y={20}
       />
-      
+
       {/* Delete button - hide when running */}
       {!isRunning && (
         <Group
@@ -57,7 +57,7 @@ const Machine = ({ id, x, y, onDrag, onClick, onDelete, isRunning }) => {
           />
         </Group>
       )}
-      
+
       {/* Clickable area for connections */}
       <Rect
         width={120}

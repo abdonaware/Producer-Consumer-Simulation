@@ -9,8 +9,9 @@ import com.example.demo.ProjectRepository;
 
 @Service
 public class CreateService {
+
     @Autowired
-    private ProjectRepository repository ;
+    private ProjectRepository repository;
 
     public long addMachine(String entity) {
 
@@ -22,8 +23,7 @@ public class CreateService {
         Machine machine = repository.getMachineById(id);
         machine.getInQueues().forEach(queue -> queue.removeMashine(machine));
         machine.getOutQueues().forEach(queue -> queue.removeOutMashine(machine));
-        int index = repository.getMachineIndexById(id);
-        repository.machines.remove(index);
+        repository.machines.remove(machine);
     }
 
     public long addQueue(String entity) {
@@ -36,8 +36,7 @@ public class CreateService {
         Queue queue = repository.getQueueById(id);
         queue.getInMashines().forEach(machine -> machine.removeInQueue(queue));
         queue.getOutMashines().forEach(machine -> machine.removeOutQueue(queue));
-        int index = repository.getQueueIndexById(id);
-        repository.queues.remove(index);
+        repository.queues.remove(queue);
     }
 
     public Boolean editMachineInQueue(long machineId, long queueId) {
@@ -73,6 +72,14 @@ public class CreateService {
         queue.addOutMashine(machine);
         machine.addOutQueue(queue);
         return true;
+    }
+
+    public void clear() {
+        repository.machines.clear();
+        repository.queues.clear();
+        repository.startQueue = null;
+        repository.endQueue = null;
+        repository.Id = 1;
     }
 
 }
