@@ -83,7 +83,7 @@ class StageServices {
 
   static restart = async () => {
     try {
-      const response = await api.put("http://localhost:8080/restart", {});
+      const response = await api.get("http://localhost:8080/restart");
       console.log(response.data);
     } catch (error) {
       console.error(error);

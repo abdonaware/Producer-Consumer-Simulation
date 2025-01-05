@@ -32,7 +32,7 @@ public class Concurrency {
                             "isBusy", String.valueOf(mashine.isBusy()));
                     webSocketSender.sendMessage("/topic/messages", data);
                     System.out.println("Machine " + mashine.getId() + " has started processing.");
-                    Thread.sleep(mashine.getProcessingTime() * 400);
+                    Thread.sleep(mashine.getProcessingTime() * 100);
                     System.out.println("Machine " + mashine.getId() + " has finished processing.");
                     mashine.setBusy(false);
                     data = Map.of("type", "machine", "id", String.valueOf(mashine.getId()), "isBusy",

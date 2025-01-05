@@ -114,20 +114,16 @@ const Toolbar = ({
         el.type === "queue" && el.id === 1000 ? { ...el, productCount: 0 } : el
       )
     );
-    console.log(elements);
 
-    let data = {
-      message: "Stop Simulation",
-    };
-    if (isRunning) {
-      sendMessage(data);
-      setIsRunning(!isRunning);
-    } else {
+    console.log(elements);
+    setTimeout(() => {
+      let data = {};
+
       setIsRunning(!isRunning);
       data.message = "Start Simulation";
       data.noOfProducts = productCount;
       sendMessage(data);
-    }
+    }, 100);
   };
 
   useEffect(() => {
