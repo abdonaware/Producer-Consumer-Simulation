@@ -19,10 +19,11 @@ public class CreateService {
     }
 
     public void removeMachine(long id) {
-        Machine machine = repository.machines.get((int) id);
+        Machine machine = repository.getMachineById(id);
         machine.getInQueues().forEach(queue -> queue.removeMashine(machine));
         machine.getOutQueues().forEach(queue -> queue.removeOutMashine(machine));
-        repository.machines.remove((int) id);
+        int index = repository.getMachineIndexById(id);
+        repository.machines.remove(index);
     }
 
     public long addQueue(String entity) {
@@ -32,10 +33,11 @@ public class CreateService {
     }
 
     public void removeQueue(long id) {
-        Queue queue = repository.queues.get((int) id);
+        Queue queue = repository.getQueueById(id);
         queue.getInMashines().forEach(machine -> machine.removeInQueue(queue));
         queue.getOutMashines().forEach(machine -> machine.removeOutQueue(queue));
-        repository.queues.remove((int) id);
+        int index = repository.getQueueIndexById(id);
+        repository.queues.remove(index);
     }
 
     public Boolean editMachineInQueue(long machineId, long queueId) {

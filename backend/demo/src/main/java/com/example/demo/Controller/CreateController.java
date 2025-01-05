@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,10 +35,15 @@ public class CreateController {
         return addCreateService.addQueue(entity);
     }
 
-    @DeleteMapping("/removeQueue")
-    public String removeQueue(@RequestBody String entity) {
-        addCreateService.removeMachine(Long.parseLong(entity));
-        return entity;
+    @DeleteMapping("/removeQueue/{QueueId}")
+    public String removeQueue(@PathVariable("QueueId") long id) {
+        addCreateService.removeQueue(id);
+        return String.valueOf(id);
+    }
+    @DeleteMapping("/removeMachine/{machineId}")
+    public String removeMAshine(@PathVariable("machineId") long id) {
+        addCreateService.removeQueue(id);
+        return String.valueOf(id);
     }
 
     @PutMapping("/editMachineInQueue")

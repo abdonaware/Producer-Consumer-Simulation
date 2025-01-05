@@ -59,6 +59,28 @@ public class ProjectRepository {
     public Machine getMachineById(long id) {
         return machines.stream().filter(m -> m.getId() == id).findFirst().orElse(null);
     }
+    public  int getQueueIndexById (long id){
+        for (int i = 0; i <queues.size(); i++) {
+            if (queues.get(i).getId()==id){
+                return i ;
+            }
+            
+        }
+      
+            return 0; 
+        
+    }
+    public  int getMachineIndexById (long id){
+        for (int i = 0; i <queues.size(); i++) {
+            if (queues.get(i).getId()==id){
+                return i ;
+            }
+            
+        }
+      
+            return 0; 
+        
+    }
 
     public Queue getQueueById(long id) {
         if (id == 0) {
