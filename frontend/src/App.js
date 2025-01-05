@@ -11,7 +11,8 @@ function App() {
   const [connections, setConnections] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
   const [productCount, setProductCount] = useState(Number(0));
-  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState(null);
+  const messageQueueRef = useRef([]);
   const [inputMessage, setInputMessage] = useState("");
   const stompClientRef = useRef(null);
 
@@ -20,20 +21,24 @@ function App() {
       await StageServices.clearStage();
     };
     handleRefresh();
-    // Create a new Stomp client
+
     const client = new Client({
-      webSocketFactory: () => new SockJS("http://localhost:8080/ws"), // Replace with your WebSocket endpoint
+      webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
       debug: (str) => {
         console.log(str);
       },
       onConnect: () => {
         console.log("Connected to WebSocket");
 
-        // Subscribe to a topic
         client.subscribe("/topic/messages", (messageOutput) => {
           console.log("Received message: ", messageOutput.body);
-          const message = JSON.parse(messageOutput.body);
-          console.log("Received: ", message);
+          const parsedMessage = JSON.parse(messageOutput.body);
+
+          // Add the message to the queue
+          messageQueueRef.current.push(parsedMessage);
+
+          // Trigger state update to process the queue
+          setMessage(parsedMessage); // This triggers the useEffect
         });
       },
       onStompError: (frame) => {
@@ -42,19 +47,37 @@ function App() {
       },
     });
 
-    // Assign client to the ref
     stompClientRef.current = client;
-
-    // Activate the connection
     client.activate();
 
-    // Cleanup on component unmount
     return () => {
       if (stompClientRef.current) {
         stompClientRef.current.deactivate();
       }
     };
   }, []);
+
+  useEffect(() => {
+    const processMessages = () => {
+      while (messageQueueRef.current.length > 0) {
+        const currentMessage = messageQueueRef.current.shift(); // Get the next message in the queue
+        console.log("Processing message: ", currentMessage);
+        console.log(elements);
+
+        if (currentMessage && currentMessage.type === "queue") {
+          setElements((prevElements) =>
+            prevElements.map((el) =>
+              el.id == currentMessage.id
+                ? { ...el, productCount: currentMessage.pendingProduct }
+                : el
+            )
+          );
+        }
+      }
+    };
+
+    processMessages();
+  }, [message]);
 
   const sendMessage = (message) => {
     console.log("sendMessage", message);
@@ -84,7 +107,6 @@ function App() {
         productCount={productCount}
         setProductCount={setProductCount}
         sendMessage={sendMessage}
-        messages={messages}
       />
       <SimulatorCanvas
         elements={elements}

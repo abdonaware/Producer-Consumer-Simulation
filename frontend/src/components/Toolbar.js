@@ -15,7 +15,6 @@ const Toolbar = ({
   productCount,
   setProductCount,
   sendMessage,
-  messages,
 }) => {
   const buttonClass =
     "px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2";
@@ -45,6 +44,7 @@ const Toolbar = ({
         productCount: 0,
       },
     ]);
+    console.log(elements);
   };
 
   const clearStage = async () => {
@@ -97,7 +97,6 @@ const Toolbar = ({
   };
 
   useEffect(() => {
-    console.log("xx");
     if (elements.length === 0) {
       setElements([
         {
