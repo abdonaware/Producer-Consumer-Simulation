@@ -66,22 +66,27 @@ function App() {
 
         if (currentMessage && currentMessage.type === "queue") {
           if (
-            currentMessage.id == 1000 &&
-            currentMessage.productCount == productCount
+            parseInt(currentMessage.id) === 1000 &&
+            parseInt(currentMessage.pendingProduct) === productCount
           ) {
+            console.log("Simulation completed");
+
             setIsRunning(false);
           }
           setElements((prevElements) =>
             prevElements.map((el) =>
-              el.id == currentMessage.id
-                ? { ...el, productCount: currentMessage.pendingProduct }
+              el.id === parseInt(currentMessage.id)
+                ? {
+                    ...el,
+                    productCount: parseInt(currentMessage.pendingProduct),
+                  }
                 : el
             )
           );
         } else if (currentMessage && currentMessage.type === "machine") {
           setElements((prevElements) =>
             prevElements.map((el) =>
-              el.id == currentMessage.id
+              el.id === parseInt(currentMessage.id)
                 ? {
                     ...el,
                     color:
