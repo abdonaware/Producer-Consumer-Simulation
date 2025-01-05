@@ -65,10 +65,28 @@ function App() {
         console.log(elements);
 
         if (currentMessage && currentMessage.type === "queue") {
+          if (
+            currentMessage.id == 1000 &&
+            currentMessage.productCount == productCount
+          ) {
+            setIsRunning(false);
+          }
           setElements((prevElements) =>
             prevElements.map((el) =>
               el.id == currentMessage.id
                 ? { ...el, productCount: currentMessage.pendingProduct }
+                : el
+            )
+          );
+        } else if (currentMessage && currentMessage.type === "machine") {
+          setElements((prevElements) =>
+            prevElements.map((el) =>
+              el.id == currentMessage.id
+                ? {
+                    ...el,
+                    color:
+                      currentMessage.isBusy === "true" ? "#DD524C" : "#3b82f6",
+                  }
                 : el
             )
           );
