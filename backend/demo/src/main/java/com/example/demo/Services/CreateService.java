@@ -74,5 +74,12 @@ public class CreateService {
         machine.addOutQueue(queue);
         return true;
     }
+    public void clear(){
+        repository.machines.clear();
+        repository.queues.clear();
+        repository.startQueue =null;
+        repository.endQueue = null ;
+        repository.Id = 1 ; 
+    }
 
 }
