@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
 import com.example.demo.Services.SimulationService;
 
 @Controller
+@Service
 public class SimulationController {
 
     @Autowired
@@ -36,9 +38,12 @@ public class SimulationController {
     @SendTo("/topic/messages")
     public Map<String, String> SendMessage(Map<String, String> message) {
         // System.out.println("Received: " + message);
+
         return message;
     }
     public void sendToWebSocket(Map<String, String> message) {
+        System.out.println("Message sent to WebSocket ["  + "]: " + message);
         SendMessage(message);
+        
     }
 }

@@ -8,26 +8,27 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class WebSocketSender {
+    @Autowired
+    private final SimpMessagingTemplate messagingTemplate;
+    private WebSocketSender Instance;
 
     @Autowired
-    private final  SimpMessagingTemplate messagingTemplate;
-    // private MessageChannel messageChannel;
-
     public WebSocketSender(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
-        messagingTemplate.setSendTimeout(100);
-       
+        this.messagingTemplate.setSendTimeout(100);
     }
 
-    
+    public WebSocketSender getInstance() {
+        if (Instance == null) {
+            Instance = new WebSocketSender(messagingTemplate);
+        }
+        return Instance;
+    }
+     
 
-    /**
-     * Sends a message to the specified WebSocket topic.
-     *
-     * @param topic the WebSocket topic to send the message to
-     * @param message the message to send
-     */
     public void sendMessage(String topic, Map<String, String> message) {
         messagingTemplate.convertAndSend(topic, message);
     }
 }
+
+

@@ -1,13 +1,15 @@
 package com.example.demo.Services;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.ProjectRepository;
 
 @Service
 public class SimulationService {
-    private ProjectRepository projectRepository = ProjectRepository.getInstance();
+    @Autowired
+    private ProjectRepository projectRepository;
 
     public boolean checkIfSimulationCanStart() {
         if(projectRepository.machines.size() == 0){

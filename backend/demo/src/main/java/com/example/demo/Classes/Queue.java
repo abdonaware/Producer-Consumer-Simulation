@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.example.demo.Controller.SimulationController;
 import com.example.demo.DesginPattern.Observer;
-import com.example.demo.Services.SimulationService;
+import com.example.demo.WebSocketSender;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,9 +16,9 @@ public class Queue implements Observer {
 
     
 
-    @Autowired
-    private SimulationService simulationService;
-    private SimulationController simulationController = new SimulationController(simulationService);
+
+    
+    private WebSocketSender webSocketSender;
     private List<Machine> inMashines = new ArrayList<>();
     private List<Machine> outMashines = new ArrayList<>();
     private List<Products> products;
@@ -30,11 +27,12 @@ public class Queue implements Observer {
     private boolean startQueue;
     private boolean endQueue;
 
-    public Queue() {
+    public Queue(WebSocketSender webSocketSender) {
+        this.webSocketSender = webSocketSender;
     }
 
     @Override
-    public void notifyall() {
+    public void notifyAllQueue() {
         for (Machine m : outMashines) {
             m.setPendingProduct(true);
         }
@@ -68,14 +66,12 @@ public class Queue implements Observer {
     public void processProduct() {
         if (pendingProduct > 0) {
             for (Machine m : inMashines) {
-                if (!m.isBusy()) {
-                    m.setBusy(true);
+                if (m.isBusy()==false) {
                     m.setPendingProduct(true);
                     Map<String, String> message = Map.of("message", "Machine " + m.getId() + " is processing a product");
-                    simulationController.sendToWebSocket( message);
+                    webSocketSender.sendMessage( "/topic/messages",message);
                     pendingProduct--;
                     m.processProduct();
-
                     break;
                 }
             }
