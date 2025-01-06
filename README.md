@@ -2,7 +2,7 @@
 
 Producer Consumer is a fullstack web application that applying Producer-Consumer Design Pattern with Threads. The Application consists of Machines and Queues that the user can build any system he wants and run to see the simulation of the process over time.
 
-![1734636805090](assets/Screenshot.png)
+![1734636805090](assets/ScreenShot.png)
 
 This is Our Fifth Assignment in Design Patterns Course (CSED27 Alexandria University)
 
@@ -25,4 +25,4 @@ This is Our Fifth Assignment in Design Patterns Course (CSED27 Alexandria Univer
 
 ## Project Report
 
-### For more detalied information check [Project Report](https://github.com/omarzydan610/InstaMail/blob/main/assets/InstaMail.pdf)
+### For more detalied information check [Project Report](https://github.com/abdonaware/Producer-Consumer-Simulation/blob/main/assets/Producer%20Consumer.pdf)
