@@ -23,6 +23,9 @@ This is Our Fifth Assignment in Design Patterns Course (CSED27 Alexandria Univer
 
 ### **UML Diagram:** ![UMLDesign](assets/UMLDesign.png)
 
+## [Demo](#demo)
+https://github.com/user-attachments/assets/25ea2b97-3b50-44f5-a0d6-019b39ddb60b
+
 ## Project Report
 
 ### For more detalied information check [Project Report](https://github.com/abdonaware/Producer-Consumer-Simulation/blob/main/assets/Producer%20Consumer.pdf)
