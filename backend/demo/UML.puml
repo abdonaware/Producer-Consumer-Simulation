@@ -1,0 +1,136 @@
+@startuml uml
+
+skinparam class {
+    BackgroundColor<<DesginPattern>> #B3E5FC
+    BackgroundColor<<Services>> #C8E6C9
+    BackgroundColor<<Classes>> #FFCC80
+    BackgroundColor<<demo>> #D1C4E9
+    ArrowColor Black
+    BorderColor Black
+}
+    skinparam backgroundColor #eee
+
+package "DesginPattern" {
+    class Concurrency <<DesginPattern>> {
+        - maxNOfMashines: int
+        - noOfConcurrentMashines: int
+        - executor: ExecutorService
+        - webSocketSender: WebSocketSender
+        + addMashines(mashine: Machine): void
+        - removeMashine(): void
+        + shutdown(): void
+    }
+
+    class Observer <<DesginPattern>>{
+        + notifyAllQueue(): void
+    }
+
+    class Snapshot <<DesginPattern>>{
+        - startQueue: Queue
+        - endQueue: Queue
+        - Id: int
+        - machines: List<Machine>
+        - queues: List<Queue>
+        + Snapshot(machines: List<Machine>, queues: List<Queue>, startQueue: Queue, endQueue: Queue, Id: int)
+    }
+
+    Concurrency ..> WebSocketSender  : uses
+    Observer <|-- Snapshot : implements
+}
+
+package "Services" {
+    class CreateService <<Services>>{
+        - repository: ProjectRepository
+        + addMachine(entity: String): long
+        + removeMachine(id: long): void
+        + addQueue(entity: String): long
+        + removeQueue(id: long): void
+        + editMachineInQueue(machineId: long, queueId: long): Boolean
+        + editMachineOutQueue(machineId: long, queueId: long): boolean
+        + clear(): void
+    }
+
+    class SimulationService <<Services>>{
+        - projectRepository: ProjectRepository
+        + checkIfSimulationCanStart(): boolean
+        + startSimulation(noOfProducts: int): Map<String, String>
+    }
+
+    class SnapshotService <<Services>>{
+        - projectRepository: ProjectRepository
+        + reloadSnapShot(): void
+    }
+
+    CreateService ..> ProjectRepository : uses
+    SimulationService ..> ProjectRepository : uses
+    SnapshotService ..> ProjectRepository : uses
+}
+
+package "Classes" {
+    class Machine <<Classes>>{
+        - id: long
+        - busy: boolean
+        - productColor: String
+        - processingTime: int
+        + getId(): long
+        + isBusy(): boolean
+        + getProductColor(): String
+        + getProcessingTime(): int
+        + setBusy(busy: boolean): void
+    }
+
+    class Queue <<Classes>>{
+        - id: long
+        - inMachines: List<Machine>
+        - outMachines: List<Machine>
+        + addMashine(machine: Machine): void
+        + removeMashine(machine: Machine): void
+        + addOutMashine(machine: Machine): void
+        + removeOutMashine(machine: Machine): void
+    }
+
+    class ProjectRepository <<Classes>>{
+        - startQueue: Queue
+        - endQueue: Queue
+        - Id: int
+        - machines: List<Machine>
+        - queues: List<Queue>
+        - snapShot: Snapshot
+        - webSocketSender: WebSocketSender
+        + addQueue(): long
+        + addMachine(): long
+        + getMachineById(id: long): Machine
+        + getQueueById(id: long): Queue
+        + saveSnapShot(): void
+        + RestoreSnapShot(): void
+        + getQueueIndexById(id: long): int
+        + getMachineIndexById(id: long): int
+        + sendToFrontend(message: Map<String, String>): void
+    }
+
+    Machine "1" -- "*" Queue : inQueues
+    Machine "1" -- "*" Queue : outQueues
+    ProjectRepository "1" -- "*" Machine : manages
+    ProjectRepository "1" -- "*" Queue : manages
+    ProjectRepository "1" -- "1" Queue : startQueue
+    ProjectRepository "1" -- "1" Queue : endQueue
+}
+
+package "demo" {
+    class WebSocketConfig <<demo>>{
+        + registerStompEndpoints(registry: StompEndpointRegistry): void
+        + configureMessageBroker(registry: MessageBrokerRegistry): void
+    }
+
+    class WebSocketSender <<demo>> {
+        - messagingTemplate: SimpMessagingTemplate
+        - Instance: WebSocketSender
+        + getInstance(): WebSocketSender
+        + sendMessage(topic: String, message: Map<String, String>): void
+    }
+
+    WebSocketConfig --> WebSocketSender : configures
+}
+
+
+@enduml
