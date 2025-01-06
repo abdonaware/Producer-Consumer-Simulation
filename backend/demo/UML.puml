@@ -35,7 +35,6 @@ package "DesginPattern" {
     }
 
     Concurrency ..> WebSocketSender  : uses
-    Observer <|-- Snapshot : implements
 }
 
 package "Services" {
@@ -114,6 +113,8 @@ package "Classes" {
     ProjectRepository "1" -- "*" Queue : manages
     ProjectRepository "1" -- "1" Queue : startQueue
     ProjectRepository "1" -- "1" Queue : endQueue
+    Observer <|-- Machine : implements
+    Observer <|-- Queue : implements
 }
 
 package "demo" {
