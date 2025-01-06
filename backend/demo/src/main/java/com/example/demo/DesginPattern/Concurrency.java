@@ -29,10 +29,10 @@ public class Concurrency {
 
                 try {
                     Map<String, String> data = Map.of("type", "machine", "id", String.valueOf(mashine.getId()),
-                            "isBusy", String.valueOf(mashine.isBusy()));
+                            "isBusy", String.valueOf(mashine.isBusy()), "color", mashine.getProductColor());
                     webSocketSender.sendMessage("/topic/messages", data);
                     System.out.println("Machine " + mashine.getId() + " has started processing.");
-                    Thread.sleep(mashine.getProcessingTime() * 100);
+                    Thread.sleep(mashine.getProcessingTime() * 300);
                     System.out.println("Machine " + mashine.getId() + " has finished processing.");
                     mashine.setBusy(false);
                     data = Map.of("type", "machine", "id", String.valueOf(mashine.getId()), "isBusy",

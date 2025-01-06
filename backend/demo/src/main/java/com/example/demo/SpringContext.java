@@ -9,7 +9,7 @@ public class SpringContext implements ApplicationContextAware {
     private static ApplicationContext context;
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public void setApplicationContext(@SuppressWarnings("null") ApplicationContext applicationContext) {
         context = applicationContext;
     }
 
