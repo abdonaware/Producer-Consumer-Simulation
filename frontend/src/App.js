@@ -14,6 +14,7 @@ function App() {
   const [message, setMessage] = useState(null);
   const messageQueueRef = useRef([]);
   const stompClientRef = useRef(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const handleRefresh = async () => {
@@ -62,8 +63,12 @@ function App() {
         const currentMessage = messageQueueRef.current.shift(); // Get the next message in the queue
         console.log("Processing message: ", currentMessage);
         console.log(elements);
-
-        if (currentMessage && currentMessage.type === "queue") {
+        if (
+          currentMessage &&
+          currentMessage.message === "Simulation can't start"
+        ) {
+          setError(true);
+        } else if (currentMessage && currentMessage.type === "queue") {
           if (
             parseInt(currentMessage.id) === 1000 &&
             parseInt(currentMessage.pendingProduct) === productCount
@@ -137,7 +142,10 @@ function App() {
         setElements={setElements}
         connections={connections}
         setConnections={setConnections}
+        setIsRunning={setIsRunning}
         isRunning={isRunning}
+        error={error}
+        setError={setError}
       />
     </div>
   );

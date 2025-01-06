@@ -52,11 +52,6 @@ public class Queue implements Observer {
         }
     }
 
-    @SuppressWarnings("unlikely-arg-type")
-    public void removeProduct(Products p) {
-        products.remove(p);
-    }
-
     public void addMashine(Machine m) {
         inMashines.add(m);
     }
