@@ -83,14 +83,19 @@ const Toolbar = ({
     );
   };
   const handleRunnigChange = () => {
-    let data = {
-      message: "Stop Simulation",
-    };
-    if (isRunning) {
-      sendMessage(data);
-      setIsRunning(!isRunning);
-    } else {
-      setIsRunning(!isRunning);
+    if (elements.find((el) => el.id === 0)?.productCount > 0) {
+      setElements(
+        elements.map((el) => {
+          if (el.type === "queue") {
+            if (el.id === 1000) {
+              return { ...el, productCount: 0 };
+            }
+          }
+          return el;
+        })
+      );
+      let data = {};
+      setIsRunning(true);
       data.message = "Start Simulation";
       data.noOfProducts = productCount;
       sendMessage(data);
@@ -98,28 +103,29 @@ const Toolbar = ({
   };
 
   const handleRestart = async () => {
-    await StageServices.restart();
-    console.log(elements);
-
-    setElements(
-      elements.map((el) => {
-        if (el.type === "queue") {
-          if (el.id === 1000) {
-            return { ...el, productCount: 0 };
+    if (elements.find((el) => el.id === 1000)?.productCount > 0) {
+      await StageServices.restart();
+      console.log(elements);
+      setElements(
+        elements.map((el) => {
+          if (el.type === "queue") {
+            if (el.id === 1000) {
+              return { ...el, productCount: 0 };
+            }
+            if (el.id === 0) {
+              return { ...el, productCount: productCount };
+            }
           }
-          if (el.id === 0) {
-            return { ...el, productCount: productCount };
-          }
-        }
-        return el;
-      })
-    );
+          return el;
+        })
+      );
 
-    let data = {};
-    setIsRunning(true);
-    data.message = "Start Simulation";
-    data.noOfProducts = productCount;
-    sendMessage(data);
+      let data = {};
+      setIsRunning(true);
+      data.message = "Start Simulation";
+      data.noOfProducts = productCount;
+      sendMessage(data);
+    }
   };
 
   useEffect(() => {
