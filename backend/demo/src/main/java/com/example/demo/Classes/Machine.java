@@ -41,10 +41,7 @@ public class Machine implements Observer {
         System.out.println("message: " + message);
 
         webSocketSender.sendMessage("/topic/messages", message);
-        for (Queue q : inQueues) {
 
-            q.processProduct();
-        }
         int minProduct = 0;
         int minIndex = 0;
         for (int i = 0; i < outQueues.size(); i++) {
@@ -56,6 +53,11 @@ public class Machine implements Observer {
 
         outQueues.get(minIndex).incrmentProducts(productColor);
         for (Queue q : outQueues) {
+            q.processProduct();
+        }
+
+        for (Queue q : inQueues) {
+
             q.processProduct();
         }
 
