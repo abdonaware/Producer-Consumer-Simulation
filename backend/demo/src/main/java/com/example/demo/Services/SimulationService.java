@@ -1,4 +1,5 @@
 package com.example.demo.Services;
+
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ public class SimulationService {
     private ProjectRepository projectRepository;
 
     public boolean checkIfSimulationCanStart() {
-        if(projectRepository.machines.size() == 0){
+        if (projectRepository.machines.size() == 0) {
             System.out.println("Machines or Queues are not present");
             return false;
         }
@@ -41,17 +42,24 @@ public class SimulationService {
         return true;
     }
 
-    public Map<String,String> startSimulation(int noOfProducts) {
+    public Map<String, String> startSimulation(int noOfProducts) {
         if (checkIfSimulationCanStart()) {
             projectRepository.saveSnapShot();
             projectRepository.startQueue.setPendingProduct(noOfProducts);
+            for (int i = 0; i < noOfProducts; i++) {
+                int R = ((i + 1) * 123) % 256;
+                int G = ((i + 1) * 456) % 256;
+                int B = ((i + 1) * 789) % 256;
+                projectRepository.startQueue.getProducts().add(String.format("#%02X%02X%02X", R, G, B));
+            }
+
             projectRepository.endQueue.setPendingProduct(0);
             projectRepository.startQueue.processProduct();
-            Map<String,String> response = Map.of("message", "Simulation started"); 
+            Map<String, String> response = Map.of("message", "Simulation started");
             return response;
-        }else{
+        } else {
             // response.replace("message", "Simulation can't start");
             return Map.of("message", "Simulation can't start");
-        }   
+        }
     }
 }

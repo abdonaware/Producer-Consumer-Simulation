@@ -3,6 +3,7 @@ package com.example.demo.Classes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedList;
 
 import com.example.demo.DesginPattern.Observer;
 import com.example.demo.WebSocketSender;
@@ -14,14 +15,11 @@ import lombok.Setter;
 @Getter
 public class Queue implements Observer {
 
-    
-
-
-    
     private WebSocketSender webSocketSender;
     private List<Machine> inMashines = new ArrayList<>();
     private List<Machine> outMashines = new ArrayList<>();
-    private List<Products> products;
+    private java.util.Queue<String> products = new LinkedList<>();
+    private Queue nextQueue;
     private int pendingProduct;
     private int id;
     private boolean startQueue;
@@ -29,16 +27,21 @@ public class Queue implements Observer {
 
     public Queue(WebSocketSender webSocketSender) {
         this.webSocketSender = webSocketSender;
-        pendingProduct = 0 ; 
+        pendingProduct = 0;
     }
-    public synchronized  void incrmentProducts(){
+
+    public synchronized void incrmentProducts(String product) {
         pendingProduct++;
-        Map<String,String> data= Map.of("type", "queue", "id", String.valueOf(id), "pendingProduct", String.valueOf(pendingProduct)); 
+        products.add(product);
+        Map<String, String> data = Map.of("type", "queue", "id", String.valueOf(id), "pendingProduct",
+                String.valueOf(pendingProduct));
         webSocketSender.sendMessage("/topic/messages", data);
     }
-    public  synchronized void decrmentProducts(){
+
+    public synchronized void decrmentProducts() {
         pendingProduct--;
-        Map<String,String> data= Map.of("type", "queue", "id", String.valueOf(id), "pendingProduct", String.valueOf(pendingProduct)); 
+        Map<String, String> data = Map.of("type", "queue", "id", String.valueOf(id), "pendingProduct",
+                String.valueOf(pendingProduct));
         webSocketSender.sendMessage("/topic/messages", data);
     }
 
@@ -49,8 +52,7 @@ public class Queue implements Observer {
         }
     }
 
-   
-
+    @SuppressWarnings("unlikely-arg-type")
     public void removeProduct(Products p) {
         products.remove(p);
     }
@@ -71,18 +73,20 @@ public class Queue implements Observer {
         outMashines.remove(m);
     }
 
-    public synchronized void  processProduct() {
+    public synchronized void processProduct() {
         if (pendingProduct > 0) {
-            
+
             for (Machine m : inMashines) {
-                if (m.isBusy()==false) {
+                if (m.isBusy() == false) {
                     m.setPendingProduct(true);
+                    m.setProductColor(products.poll());
                     decrmentProducts();
-                    Map<String, String> message = Map.of("message", "Machine " + m.getId() + " is processing a product");
-                    webSocketSender.sendMessage( "/topic/messages",message);
+                    Map<String, String> message = Map.of("message",
+                            "Machine " + m.getId() + " is processing a product");
+                    webSocketSender.sendMessage("/topic/messages", message);
                     m.processProduct();
                 }
-                if(pendingProduct<=0){
+                if (pendingProduct <= 0) {
                     break;
                 }
             }

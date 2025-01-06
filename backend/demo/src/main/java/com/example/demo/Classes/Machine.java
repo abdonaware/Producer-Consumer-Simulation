@@ -24,7 +24,8 @@ public class Machine implements Observer {
     private int processingTime;// time needed to process a product
     private List<Queue> inQueues = new ArrayList<>();
     private List<Queue> outQueues = new ArrayList<>();
-    private boolean pendingProduct;// true if the mashine has a product to process
+    private boolean pendingProduct;
+    private String productColor;// true if the mashine has a product to process
 
     public Machine(WebSocketSender webSocketSender) {
         this.webSocketSender = webSocketSender;
@@ -45,15 +46,15 @@ public class Machine implements Observer {
             q.processProduct();
         }
         int minProduct = 0;
-        int minIndex =0  ;
+        int minIndex = 0;
         for (int i = 0; i < outQueues.size(); i++) {
-           if(outQueues.get(i).getPendingProduct() < minProduct){
-               minProduct = outQueues.get(i).getPendingProduct();
-               minIndex = i;
-           }
+            if (outQueues.get(i).getPendingProduct() < minProduct) {
+                minProduct = outQueues.get(i).getPendingProduct();
+                minIndex = i;
+            }
         }
 
-        outQueues.get(minIndex).incrmentProducts();
+        outQueues.get(minIndex).incrmentProducts(productColor);
         for (Queue q : outQueues) {
             q.processProduct();
         }
@@ -88,9 +89,10 @@ public class Machine implements Observer {
             }
         }
     }
+
     public void exitProcess() {
         concurrency.shutdown();
-        
+
     }
 
 }

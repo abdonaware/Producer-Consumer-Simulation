@@ -13,7 +13,6 @@ function App() {
   const [productCount, setProductCount] = useState(Number(0));
   const [message, setMessage] = useState(null);
   const messageQueueRef = useRef([]);
-  const [inputMessage, setInputMessage] = useState("");
   const stompClientRef = useRef(null);
 
   useEffect(() => {
@@ -90,7 +89,9 @@ function App() {
                 ? {
                     ...el,
                     color:
-                      currentMessage.isBusy === "true" ? "#DD524C" : "#3b82f6",
+                      currentMessage.isBusy === "true"
+                        ? currentMessage.color
+                        : "#3b82f6",
                   }
                 : el
             )
@@ -100,6 +101,7 @@ function App() {
     };
 
     processMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [message]);
 
   const sendMessage = (message) => {
@@ -111,7 +113,6 @@ function App() {
         destination: "/app/message", // Match this with your backend MessageMapping
         body: JSON.stringify(message), // Convert the message object to JSON message,
       });
-      setInputMessage("");
     } else {
       console.error(
         "Unable to send message: STOMP client not connected or message is empty"
