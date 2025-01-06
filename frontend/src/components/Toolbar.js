@@ -64,7 +64,7 @@ const Toolbar = ({
       {
         id: 1000,
         type: "queue",
-        x: 1085,
+        x: 1185,
         y: window.innerHeight / 2 - 80,
         queueNumber: 1000,
         productCount: 0,
@@ -136,7 +136,7 @@ const Toolbar = ({
         {
           id: 1000,
           type: "queue",
-          x: 1085,
+          x: 1185,
           y: window.innerHeight / 2 - 80,
           queueNumber: 1000,
           productCount: 0,
@@ -181,14 +181,15 @@ const Toolbar = ({
         onClick={() => {
           handleRunnigChange();
         }}
+        disabled={isRunning}
         className={`${buttonClass} ${
           isRunning
-            ? "bg-amber-500 hover:bg-amber-600 text-white"
+            ? "bg-gray-100 cursor-not-allowed text-gray-400"
             : "bg-indigo-500 hover:bg-indigo-600 text-white"
         }`}
       >
         {isRunning ? <FaPause size={16} /> : <FaPlay size={16} />}
-        {isRunning ? "Pause" : "Run"}
+        Run
       </button>
 
       {/* restart button */}
